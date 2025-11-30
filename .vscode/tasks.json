@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build e2tc.exe (scoop path)",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"%scoop%\\apps\\autohotkey\\current\\compiler\\Ahk2Exe /in \"e2tc.ahk\" /out \"e2tc.exe\" /icon \"e2tc.ico\""
+			],
+			"group": "build",
+			"problemMatcher": []
+		}
+	]
+}

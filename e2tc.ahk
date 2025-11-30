@@ -16,12 +16,29 @@ UI_ID_EDIT_INVERT_SELECTION         := 40029
 SetWorkingDir A_ScriptDir
 iniFile := RegExReplace(A_ScriptFullPath, "(ahk|exe)$", "ini")
 
+;==================== SHOW ICON (TOP RIGHT) ====================
+; Display e2tc.ico (or compiled exe resource) with transparent color 333333
+{
+	iconFile := A_ScriptDir "\e2tc.ico"
+	iconSource := (A_IsCompiled && FileExist(A_ScriptFullPath)) ? A_ScriptFullPath : iconFile
+	if FileExist(iconSource) {
+		global iconGui := Gui("+AlwaysOnTop -Caption +ToolWindow +E0x20", "e2tc")
+		iconGui.BackColor := "333333"
+		WinSetTransColor("333333", iconGui)
+		iconGui.Add("Picture", "Background333333 w128 h128", iconSource)
+		screenWidth := A_ScreenWidth
+		; Position at top right with 8px margin
+		iconGui.Show("x" (screenWidth - 144) " y8 NoActivate")
+	}
+}
+
 
 ;==================== OUT OF THE BOX SETTINGS
 
-        OOB_LOADLISTfilename   := ".\Everything.lst"
-        OOB_TCexecutable     := "%COMMANDER_EXE%"
-        OOB_CloseEverythingWhenDone := 0
+	OOB_LOADLISTfilename        := "Everything.lst"
+	OOB_TCexecutable 	        := "%COMMANDER_EXE%"
+	OOB_CloseEverythingWhenDone := 0
+	OOB_SleepTime               := 2000
 
 
 ;==================== READ INI
@@ -30,25 +47,46 @@ iniFile := RegExReplace(A_ScriptFullPath, "(ahk|exe)$", "ini")
    LoadlistFilename    := ResolveEnvVars( IniRead( IniFile, "General", "LOADLIST_Filename", OOB_LOADLISTfilename) )
    TCexecutable     := ResolveEnvVars( IniRead( IniFile, "General", "TCexecutable",     OOB_TCexecutable) )
    CloseEverythingWhenDone := IniRead( IniFile, "General", "CloseEverythingWhenDone", OOB_CloseEverythingWhenDone)
+	SleepTime := IniRead( IniFile, "General", "SleepTime", OOB_SleepTime)
+	; Ensure LOADLIST path is absolute; if not, make it relative to script dir
+	if !RegExMatch(LoadlistFilename, "^(?:[A-Za-z]:|\\\\)") {
+		LoadlistFilename := A_ScriptDir "\" LoadlistFilename
+	}
 
 
 ;==================== CHECK INI
 
 	If !FileExist(TCexecutable)
 	{
-		TCexecutable := FileSelect(3,"C:\", "Select Total Commander executable to use", "Executable (TOTALCMD*.exe)")
+		;SetTitleMatchMode "RegEx"
+		tcWinIDs := WinGetList("ahk_class TTOTAL_CMD")
+		if tcWinIDs.Length > 0
+		{
+			tcWinID := tcWinIDs[1]
+			TCexecutable := WinGetProcessPath("ahk_id " tcWinID)
+		}
+
+		; If still not found, prompt user to select
 		If !FileExist(TCexecutable)
 		{
-			MsgBox "No Total Commander executable found.`nProgram will EXIT`nPlease try again"
-			ExitApp
+			TCexecutable := FileSelect(3,"C:\", "Select Total Commander executable to use", "Executable (TOTALCMD*.exe)")
+			If ! FileExist(TCexecutable)
+			{
+				MsgBox "No Total Commander executable found.`nProgram will EXIT`nPlease try again"
+				ExitApp
+			}
 		}
 	}
 
 ;==================== WRITE INI
-;	Case insensitive comparison
-	IniWrite LoadlistFilename, IniFile, "General", "LOADLIST_Filename"
-	IniWrite TCexecutable, IniFile, "General", "TCexecutable"
-	IniWrite CloseEverythingWhenDone, IniFile, "General", "CloseEverythingWhenDone"
+;	Case insensitive comparison (only if INI file doesn't exist)
+	If !FileExist(IniFile)
+	{
+		IniWrite OOB_LOADLISTfilename, IniFile, "General", "LOADLIST_Filename"
+		IniWrite OOB_TCexecutable, IniFile, "General", "TCexecutable"
+		IniWrite OOB_CloseEverythingWhenDone, IniFile, "General", "CloseEverythingWhenDone"
+		IniWrite OOB_SleepTime, IniFile, "General", "SleepTime"
+	}
 
 
 ;=================== GET Result using clipboard and open TC
@@ -84,10 +122,11 @@ iniFile := RegExReplace(A_ScriptFullPath, "(ahk|exe)$", "ini")
 
 		TCparameters := ' /O /T /S LOADLIST:`"' . LoadlistFilename . '`"'
 
-		Run TCexecutable TCparameters
+		Run TCexecutable TCparameters, A_ScriptDir
 	} else {
 		MsgBox "Everything windows not found,`r`n do a search and retry !"
 	}
+	Sleep SleepTime
 	ExitApp
 }
 

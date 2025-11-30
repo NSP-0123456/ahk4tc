@@ -6,3 +6,5 @@ cmd=%COMMANDER_PATH%\script\e2tc.ahk
 menu=load result from Everything Search
 ```
 You can use a button, a shortcut or an alias calling the  __em_getResultFromEV__
+
+Added icon Top Right
