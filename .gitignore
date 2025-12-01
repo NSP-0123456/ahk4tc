@@ -3,3 +3,6 @@
 
 # List files
 *.lst
+
+# Backup file
+.bak
