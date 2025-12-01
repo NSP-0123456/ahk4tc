@@ -3,6 +3,7 @@
 
 # List files
 *.lst
-
-# Backup file
-.bak
+ 
+ # Backup/Log Files
+*.bak
+*.log   
