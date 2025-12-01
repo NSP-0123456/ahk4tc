@@ -1,3 +1,6 @@
+#vscode specific
+.vscode/
+
 # Configuration files
 *.ini
 
@@ -6,4 +9,4 @@
  
  # Backup/Log Files
 *.bak
-*.log   
+*.log 
