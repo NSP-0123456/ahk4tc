@@ -13,5 +13,7 @@ Added icon Top Right
 
 # VPEditScript2.ahk
 
-This script allow to see Virtual Panel script command. It can change icon and see/edit an auto indented script in notepad.exe.
-This is an autohotkey v2 version. Total Commander can be a little unresponsive hen updating VirtualPanel.  
+This script allow to view/edit Virtual Panel script command. 
+It can change icon and view/edit as an auto indented script in notepad.
+This is an autohotkey v2 version. Total Commander can be a little unresponsive when updating VirtualPanel.
+
