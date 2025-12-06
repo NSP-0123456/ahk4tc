@@ -18,6 +18,6 @@ It can change icon and view/edit as an auto indented script in notepad.\
 This is an autohotkey v2 version. Total Commander can be a little unresponsive when updating VirtualPanel.
 
 # AHK ignore untracked script
-The script add all untracked files/Folder as entry in .gitignore file.\
+The script add all untracked files/Folder as entry in .git/info/exclude file.\
 You can remove the esction between the commented section inside the file.
 
