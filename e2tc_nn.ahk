@@ -1,8 +1,8 @@
-;# NotNull, Horst.Epp
-;# 26/11/2025 18:28:58
+;# Native2904, NotNull, Horst.Epp
+;# 12/01/2026
 
-;#Requires AutoHotkey v2.0
-;#SingleInstance Force
+#Requires AutoHotkey v2.0
+#SingleInstance Force
 
 ;==================== CONSTANTS ==========================
 WM_COMMAND := 0x0111
@@ -48,12 +48,12 @@ IniFile := "Everything2TC.ini"
 	}
 
 ;==================== WRITE INI
-;	Case insensitive comparison 
+;	Case insensitive comparison
 ;	IniWrite LoadlistFilename, IniFile, "General", "LOADLIST_Filename"
 ;	IniWrite TCexecutable, IniFile, "General", "TCexecutable"
 ;	IniWrite CloseEverythingWhenDone, IniFile, "General", "CloseEverythingWhenDone"
 
-	
+
 	WinActivate "ahk_exe Everything.exe"
         WinWaitActive "ahk_exe Everything.exe"
         winID := WinGetID("ahk_exe Everything.exe")
@@ -83,5 +83,5 @@ IniFile := "Everything2TC.ini"
 	}
 
 	TCparameters := ' /O /T /S LOADLIST:`"' . LoadlistFilename . '`"'
-	
+
 	Run TCexecutable TCparameters
