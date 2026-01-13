@@ -16,21 +16,6 @@ UI_ID_EDIT_INVERT_SELECTION         := 40029
 SetWorkingDir A_ScriptDir
 iniFile := RegExReplace(A_ScriptFullPath, "(ahk|exe)$", "ini")
 
-;==================== SHOW ICON (TOP RIGHT) ====================
-; Display e2tc.ico (or compiled exe resource) with transparent color 333333
-{
-	iconFile := A_ScriptDir "\e2tc.ico"
-	iconSource := (A_IsCompiled && FileExist(A_ScriptFullPath)) ? A_ScriptFullPath : iconFile
-	if FileExist(iconSource) {
-		global iconGui := Gui("+AlwaysOnTop -Caption +ToolWindow +E0x20", "e2tc")
-		iconGui.BackColor := "333333"
-		WinSetTransColor("333333", iconGui)
-		iconGui.Add("Picture", "Background333333 w128 h128", iconSource)
-		screenWidth := A_ScreenWidth
-		; Position at top right with 8px margin
-		iconGui.Show("x" (screenWidth - 144) " y8 NoActivate")
-	}
-}
 
 
 ;==================== OUT OF THE BOX SETTINGS
@@ -39,6 +24,7 @@ iniFile := RegExReplace(A_ScriptFullPath, "(ahk|exe)$", "ini")
 	OOB_TCexecutable 	        := "%COMMANDER_EXE%"
 	OOB_CloseEverythingWhenDone := 0
 	OOB_SleepTime               := 2000
+	OOB_IconPosition            := "TR"
 
 
 ;==================== READ INI
@@ -46,6 +32,7 @@ iniFile := RegExReplace(A_ScriptFullPath, "(ahk|exe)$", "ini")
 ;  Read settings from INI file
    LoadlistFilename    := ResolveEnvVars( IniRead( IniFile, "General", "LOADLIST_Filename", OOB_LOADLISTfilename) )
    TCexecutable     := ResolveEnvVars( IniRead( IniFile, "General", "TCexecutable",     OOB_TCexecutable) )
+   IconPosition     := IniRead( IniFile, "General", "IconPosition", OOB_IconPosition)
    CloseEverythingWhenDone := IniRead( IniFile, "General", "CloseEverythingWhenDone", OOB_CloseEverythingWhenDone)
 	SleepTime := IniRead( IniFile, "General", "SleepTime", OOB_SleepTime)
 	; Ensure LOADLIST path is absolute; if not, make it relative to script dir
@@ -85,9 +72,11 @@ iniFile := RegExReplace(A_ScriptFullPath, "(ahk|exe)$", "ini")
 		IniWrite OOB_LOADLISTfilename, IniFile, "General", "LOADLIST_Filename"
 		IniWrite OOB_TCexecutable, IniFile, "General", "TCexecutable"
 		IniWrite OOB_CloseEverythingWhenDone, IniFile, "General", "CloseEverythingWhenDone"
+		IniWrite OOB_IconPosition, IniFile, "General", "IconPosition"
 		IniWrite OOB_SleepTime, IniFile, "General", "SleepTime"
 	}
-
+;================================ Show Icon when starting
+num := ShowE2TCIcon(IconPosition)
 
 ;=================== GET Result using clipboard and open TC
 {
@@ -143,3 +132,49 @@ ResolveEnvVars(str) {
     }
     return str
 }
+;==================== SHOW ICON ====================
+; Display e2tc.ico (or compiled exe resource) with transparent color 333333
+ShowE2TCIcon(IconPos := "TR") {
+	iconFile := A_ScriptDir "\e2tc.ico"
+	iconSource := (A_IsCompiled && FileExist(A_ScriptFullPath)) ? A_ScriptFullPath : iconFile
+	if FileExist(iconSource) {
+		global iconGui := Gui("+AlwaysOnTop -Caption +ToolWindow +E0x20", "e2tc")
+		iconGui.BackColor := "333333"
+		WinSetTransColor("333333", iconGui)
+		iconGui.Add("Picture", "Background333333 w128 h128", iconSource)
+
+		screenWidth := A_ScreenWidth
+		screenHeight := A_ScreenHeight
+		iconWidth := 128
+		iconHeight := 128
+		margin := 8
+
+		; Calculate position based on IconPos parameter
+		switch IconPos {
+			case "TL": ; Top Left
+				xPos := margin
+				yPos := margin
+			case "TR": ; Top Right
+				xPos := screenWidth - iconWidth - margin
+				yPos := margin
+			case "TC": ; Top Center
+				xPos := (screenWidth - iconWidth) // 2
+				yPos := margin
+			case "BL": ; Bottom Left
+				xPos := margin
+				yPos := screenHeight - iconHeight - margin
+			case "BR": ; Bottom Right
+				xPos := screenWidth - iconWidth - margin
+				yPos := screenHeight - iconHeight - margin
+			case "BC": ; Bottom Center
+				xPos := (screenWidth - iconWidth) // 2
+				yPos := screenHeight - iconHeight - margin
+			default: ; Default to Top Right
+				xPos := screenWidth - iconWidth - margin
+				yPos := margin
+		}
+
+		iconGui.Show("x" xPos " y" yPos " NoActivate")
+	}
+}
+

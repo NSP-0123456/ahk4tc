@@ -9,7 +9,10 @@ menu=load result from Everything Search
 ```
 You can use a button, a shortcut or an alias calling the  __em_getResultFromEV__
 
-Added icon Top Right
+Added icon position to Top/Bottom Left Center Right
+
+# ev2tc_nn.ahk
+Modified version for slow system
 
 # VPEditScript2.ahk
 
