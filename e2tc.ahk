@@ -115,7 +115,9 @@ num := ShowE2TCIcon(IconPosition)
 	} else {
 		MsgBox "Everything windows not found,`r`n do a search and retry !"
 	}
-	Sleep SleepTime
+	If ( IconPosition != "NONE" ){
+	   Sleep SleepTime
+	}
 	ExitApp
 }
 
@@ -135,6 +137,9 @@ ResolveEnvVars(str) {
 ;==================== SHOW ICON ====================
 ; Display e2tc.ico (or compiled exe resource) with transparent color 333333
 ShowE2TCIcon(IconPos := "TR") {
+	if ( IconPos == "NONE" ){
+		return 0
+	}
 	iconFile := A_ScriptDir "\e2tc.ico"
 	iconSource := (A_IsCompiled && FileExist(A_ScriptFullPath)) ? A_ScriptFullPath : iconFile
 	if FileExist(iconSource) {
